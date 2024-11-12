@@ -20,3 +20,6 @@ Installation
 6. mit "node server.js" starten
 
 7. Die Karte kann dann mit dem Browser unter http://localhost:3000 aufgerufen werden.
+
+
+![Alternativtext](https://github.com/bmetallica/nginx-PM_geo-map-app/blob/main/Screenshot.jpg)
