@@ -1,0 +1,37 @@
+/* Dark Mode Basis-Stile */
+body {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
+/* Kartencontainer für Leaflet */
+#map {
+    height: 100vh;
+    width: 100%;
+    filter: brightness(0.8); /* Dunkelt die Karte noch weiter ab */
+}
+
+/* Anpassen von Buttons und Text */
+button, .info-text, .log-entry {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
+}
+
+button:hover {
+    background-color: #444;
+}
+
+/* Tooltip und Popup-Stil */
+.leaflet-popup-content-wrapper {
+    background: #333;
+    color: #fff;
+}
+
+.leaflet-popup-tip {
+    background: #333;
+}
+#homeIcon {
+    background-color: transparent; /* Sicherstellen, dass der Hintergrund transparent ist */
+}

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zugriffs-Überwachung</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-curve"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map { height: 100vh; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <script>
+        const map = L.map('map').setView([0, 0], 2);
+
+        // OpenStreetMap TileLayer im Dark-Mode
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://carto.com/">CartoDB</a>',
+            maxZoom: 19,
+        }).addTo(map);
+
+        const socket = io();
+
+        let homeMarker = null; // Speichert den Marker für die öffentliche IP-Adresse.
+        let publicIpLocation = null; // Speichert die Position der öffentlichen IP.
+
+        // Empfang der öffentlichen IP-Daten für den Marker
+        socket.on('publicIpLocation', function(data) {
+            if (data && data.location) {
+                publicIpLocation = data.location;
+                if (!homeMarker) {
+                    const iconUrl = '/images/home.png'; // Rotes Haus-Symbol
+                    homeMarker = L.marker(publicIpLocation, { icon: L.icon({ iconUrl: iconUrl, iconSize: [30, 25] }) })
+                        .addTo(map)
+                        .bindPopup(`<b>Öffentliche IP</b><br>${data.city}, ${data.country}`)
+                        .openPopup();
+                } else {
+                    homeMarker.setLatLng(publicIpLocation);
+                }
+            } else {
+                console.error('Ungültige Daten für öffentliche IP:', data);
+            }
+        });
+
+        // Funktion zur stabilen Animation des Bogens
+        function animateCurve(from, to) {
+            // Berechnung des dynamischen Steuerpunkts mit einer festen Krümmung basierend auf der Entfernung
+            const midLat = (from[0] + to[0]) / 2;
+            const midLng = (from[1] + to[1]) / 2;
+            const offsetFactor = 0.3; // Fester Krümmungsfaktor für stabile Bögen
+
+            const offsetLat = (from[0] - to[0]) * offsetFactor;
+            const offsetLng = (from[1] - to[1]) * offsetFactor;
+
+            const controlPoint = [midLat + offsetLat, midLng + offsetLng];
+            const curve = L.curve([
+                'M', from,
+                'Q', controlPoint,
+                to
+            ], { color: '#ff7800', weight: 2 }).addTo(map);
+
+            // Stabilere Animation des Bogens durch kontinuierliche Anpassung des Strichmusters
+            let dashOffset = 0;
+            const interval = setInterval(() => {
+                dashOffset += 2;
+                curve.setStyle({
+                    dashArray: '5, 15',
+                    dashOffset: dashOffset.toString(),
+                    color: '#ff7800'
+                });
+                
+                // Stoppe die Animation nach einer bestimmten Zeit
+                if (dashOffset > 150) clearInterval(interval);
+            }, 60);
+        }
+
+        // Empfange logEntry-Daten und zeige einen neuen Marker für die Client-Anfrage
+        socket.on('logEntry', (data) => {
+            const { ip, domain, location, city, country } = data;
+            const marker = L.marker(location).addTo(map);
+            marker.bindPopup(`<b>IP:</b> ${ip}<br><b>Domain:</b> ${domain}<br><b>Ort:</b> ${city}, ${country}`).openPopup();
+
+            // Bogenverbindung von der öffentlichen IP zum neuen Standort animieren
+            if (publicIpLocation) {
+                animateCurve(publicIpLocation, location);
+            }
+        });
+    </script>
+</body>
+</html>
