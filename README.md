@@ -1,25 +1,74 @@
-# nginx-PM_geo-map-app
-Eine Geomap für den nginx Proxy Manager
+# 🌍 nginx-PM_geo-map-app
 
-Es handelt sich um eine NodeJS Anwendung.
-Voraussetzung ist das Nodejs mit npm installiert ist und der Pfad der Logdateien des Nginx Proxy manager bekannt ist.
+**Live-Geodatenkarte für den NGINX Proxy Manager**
 
-Installation
+Dies ist eine Node.js-Anwendung zur Visualisierung von Zugriffen auf Domains des NGINX Proxy Managers auf einer Weltkarte.
+
+![Geo Map Screenshot](https://github.com/bmetallica/nginx-PM_geo-map-app/blob/main/Screenshot.jpg)
+
+---
+
+## 📋 Voraussetzungen
+
+- Installiertes **Node.js** mit **npm**
+- Zugriff auf die **Logdateien des NGINX Proxy Managers**
+
+---
+
+## ⚙️ Installation
+
+### 1. Projekt klonen
+
+```bash
+git clone https://github.com/bmetallica/nginx-PM_geo-map-app.git
+cd nginx-PM_geo-map-app
+```
+
+### 2. Node-Projekt initialisieren
+
+```bash
+npm init -y
+```
+
+### 3. Abhängigkeiten installieren
+
+```bash
+npm install express ws geoip-lite socket.io node-fetch@2
+```
+
+---
+
+## 🔧 Konfiguration
+
+- In der Datei `server.js` muss der Pfad zu den Logdateien des NGINX Proxy Managers angepasst werden:
+
+```js
+const logPath = "/portainer/Files/AppData/Config/nginx-proxy-manager/data/logs/";
+```
+
+---
+
+## 🚀 Starten
+
+```bash
+node server.js
+```
+
+Anschließend kannst du die Karte im Browser unter folgendem Link aufrufen:
+
+```
+http://localhost:3000
+```
+
+---
+
+## ✅ Features
+
+- Zeigt eingehende Verbindungen auf einer Weltkarte
+- Nutzt GeoIP zur Standortauflösung
+- Live-Aktualisierung über WebSocket
 
 
-1. mit https://github.com/bmetallica/nginx-PM_geo-map-app.git downloaden
+---
 
-2. mit "cd geo-map-app" in das Verzeichnis wechseln.
-
-3. mit "npm init -y" Projekt initialisieren
-
-4. mit "npm install express ws geoip-lite socket.io node-fetch@2" Abhängigkeiten installieren
-
-5. in der server.js muss der Pfad zu den Logdateien des Nginx-PM angepasst werden
-
-6. mit "node server.js" starten
-
-7. Die Karte kann dann mit dem Browser unter http://localhost:3000 aufgerufen werden.
-
-
-![Alternativtext](https://github.com/bmetallica/nginx-PM_geo-map-app/blob/main/Screenshot.jpg)
+**Autor:** [bmetallica](https://github.com/bmetallica)
